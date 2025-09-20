@@ -3,204 +3,359 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Calculator</title>
+  <title>Greatest Calculator</title>
   <style>
-* {
-  box-sizing: border-box;
+:root {
+  --main-bg: #ffffff;
+  --secondary-bg: #f0f0f0;
+  --primary: #007bff;
+  --primary-dark: #0056b3;
+  --success: #28a745;
+  --success-dark: #1e7e34;
+  --danger: #dc3545;
+  --danger-dark: #bd2130;
+  --text: #333;
+  --shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+body.dark {
+  --main-bg: #222831;
+  --secondary-bg: #393e46;
+  --primary: #00adb5;
+  --primary-dark: #00747a;
+  --success: #21e6c1;
+  --success-dark: #13a982;
+  --danger: #ff5722;
+  --danger-dark: #c41c00;
+  --text: #f1f1f1;
+  --shadow: 0 10px 16px rgba(0,0,0,0.7);
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  background-color: var(--main-bg);
+  transition: background 0.4s;
+}
+body.dark {
+  background: linear-gradient(135deg, #222831, #393e46);
 }
 
 .calculator {
-  background: #ffffff;
+  background: var(--main-bg);
   padding: 30px 25px;
   border-radius: 20px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   max-width: 400px;
   width: 100%;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s;
   transform: scale(1);
-  animation: scaleIn 0.5s ease-out;
+  animation: scaleIn 0.5s;
+  position: relative;
+  z-index: 1;
+}
+
+.calculator-display-row {
+  display: flex;
+  gap: 10px;
 }
 
 .calculator-display {
   width: 100%;
   height: 70px;
-  background: #f0f0f0;
+  background: var(--secondary-bg);
   border: none;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   text-align: right;
   padding: 20px;
   font-size: 2rem;
   font-weight: bold;
   border-radius: 10px;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-  color: #333;
-  transition: all 0.3s ease;
+  color: var(--text);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+  flex: 1;
 }
 
-.calculator-display:focus {
-  outline: none;
-  box-shadow: inset 0 2px 8px rgba(0, 123, 255, 0.5);
+button.copy-btn {
+  width: 60px;
+  margin-bottom: 15px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 3px 8px rgba(0,123,255,0.2);
+  display: flex; justify-content: center; align-items: center;
 }
+button.copy-btn:hover { background: var(--primary-dark); }
 
 .calculator-buttons {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
 }
-
 button {
-  height: 60px;
-  font-size: 1.4rem;
+  height: 50px;
+  font-size: 1.1rem;
   font-weight: 600;
   border: none;
   border-radius: 10px;
-  background: #007bff;
+  background: var(--primary);
   color: #fff;
   cursor: pointer;
-  transition: transform 0.1s ease-in-out, background 0.3s, box-shadow 0.2s;
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transition: transform 0.1s, background 0.3s, box-shadow 0.2s;
+  box-shadow: 0 3px 8px rgba(0,123,255,0.15);
+  display: flex; justify-content: center; align-items: center;
+}
+button.large {
+  grid-column: span 2;
+}
+button.operator { background: var(--success); }
+button.operator:hover { background: var(--success-dark); }
+button.clear { background: var(--danger); }
+button.clear:hover { background: var(--danger-dark); }
+button.theme-toggle {
+  background: var(--secondary-bg);
+  color: var(--text);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  box-shadow: none;
+}
+button.theme-toggle:hover {
+  background: var(--primary);
+  color: #fff;
 }
 
-button:hover {
-  background: #0056b3;
-  box-shadow: 0 8px 15px rgba(0, 123, 255, 0.3);
+.history-panel {
+  background: var(--secondary-bg);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  color: var(--text);
+  width: 100%;
+  min-height: 40px;
+}
+.history-panel h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.history-list li {
+  margin-bottom: 3px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.history-list li:hover {
+  background: var(--primary);
+  color: #fff;
 }
 
-button:active {
-  transform: scale(0.98);
+@media (max-width: 600px) {
+  .calculator { padding: 20px 5px; max-width: 99vw;}
+  .calculator-display { font-size: 1.4rem; height: 45px; padding: 10px;}
+  button { font-size: 1rem; height: 40px;}
+  .history-panel { font-size: 0.92rem; padding: 7px 6px;}
 }
-
-button.operator {
-  background: #28a745;
-}
-
-button.operator:hover {
-  background: #1e7e34;
-}
-
-button.clear {
-  background: #dc3545;
-}
-
-button.clear:hover {
-  background: #bd2130;
-}
-
-@media (max-width: 450px) {
-  .calculator {
-    padding: 25px 20px;
-  }
-
-  .calculator-display {
-    font-size: 1.6rem;
-    height: 60px;
-    padding: 15px;
-  }
-
-  button {
-    font-size: 1.2rem;
-    height: 50px;
-  }
-}
-
 @keyframes scaleIn {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
-
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">🌙</button>
   <div class="calculator">
-    <input type="text" id="display" class="calculator-display" disabled />
+    <div class="history-panel" id="history-panel">
+      <h4>History</h4>
+      <ul class="history-list" id="history-list"></ul>
+    </div>
+
+    <div class="calculator-display-row">
+      <input type="text" id="display" class="calculator-display" disabled />
+      <button class="copy-btn" title="Copy result" onclick="copyResult()">📋</button>
+    </div>
+
     <div class="calculator-buttons">
       <button onclick="appendNumber('7')">7</button>
       <button onclick="appendNumber('8')">8</button>
       <button onclick="appendNumber('9')">9</button>
       <button class="operator" onclick="chooseOperator('/')">÷</button>
+      <button onclick="scientific('sqrt')">√</button>
       <button onclick="appendNumber('4')">4</button>
       <button onclick="appendNumber('5')">5</button>
       <button onclick="appendNumber('6')">6</button>
       <button class="operator" onclick="chooseOperator('*')">×</button>
+      <button onclick="scientific('^')">xʸ</button>
       <button onclick="appendNumber('1')">1</button>
       <button onclick="appendNumber('2')">2</button>
       <button onclick="appendNumber('3')">3</button>
       <button class="operator" onclick="chooseOperator('-')">−</button>
+      <button onclick="scientific('%')">%</button>
       <button onclick="appendNumber('0')">0</button>
       <button onclick="appendNumber('.')">.</button>
+      <button onclick="backspace()" title="Backspace">⌫</button>
       <button onclick="calculate()">=</button>
       <button class="operator" onclick="chooseOperator('+')">+</button>
       <button class="clear" onclick="clearDisplay()">C</button>
     </div>
   </div>
-
   <script>
     let currentOperand = '';
     let previousOperand = '';
     let operation = undefined;
+    let history = [];
+
+    const display = document.getElementById('display');
+    const historyList = document.getElementById('history-list');
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
 
     function appendNumber(number) {
       if (number === '.' && currentOperand.includes('.')) return;
+      if (currentOperand.length > 18) return; // max length
       currentOperand += number;
       updateDisplay();
     }
 
     function chooseOperator(operator) {
-      if (currentOperand === '') return;
-      if (previousOperand !== '') {
+      if (currentOperand === '' && operator !== '-') return;
+      if (currentOperand === '' && operator === '-' && previousOperand === '') {
+        currentOperand = '-';
+        updateDisplay();
+        return;
+      }
+      if (previousOperand !== '' && currentOperand !== '') {
         calculate();
       }
       operation = operator;
       previousOperand = currentOperand;
       currentOperand = '';
+      updateDisplay();
+    }
+
+    function scientific(func) {
+      if (func === 'sqrt') {
+        if (currentOperand === '') return;
+        let value = parseFloat(currentOperand);
+        if (value < 0) {
+          display.value = "Invalid input";
+          currentOperand = '';
+          return;
+        }
+        addToHistory(`√(${value})`, Math.sqrt(value));
+        currentOperand = Math.sqrt(value).toString();
+        previousOperand = '';
+        operation = undefined;
+        updateDisplay();
+      }
+      else if (func === '^') {
+        if (currentOperand === '') return;
+        if (previousOperand === '') {
+          previousOperand = currentOperand;
+          operation = '^';
+          currentOperand = '';
+        } else if (currentOperand !== '') {
+          calculate();
+        }
+        updateDisplay();
+      }
+      else if (func === '%') {
+        if (currentOperand === '') return;
+        let value = parseFloat(currentOperand);
+        addToHistory(`${value}%`, value/100);
+        currentOperand = (value/100).toString();
+        previousOperand = '';
+        operation = undefined;
+        updateDisplay();
+      }
     }
 
     function calculate() {
       let computation;
-      const prev = parseFloat(previousOperand);
-      const current = parseFloat(currentOperand);
+      let prev = parseFloat(previousOperand);
+      let current = parseFloat(currentOperand);
+      let equation = '';
       if (isNaN(prev) || isNaN(current)) return;
-
       switch (operation) {
         case '+':
           computation = prev + current;
+          equation = `${prev} + ${current}`;
           break;
         case '-':
           computation = prev - current;
+          equation = `${prev} - ${current}`;
           break;
         case '*':
           computation = prev * current;
+          equation = `${prev} × ${current}`;
           break;
         case '/':
+          if (current === 0) {
+            display.value = "Cannot divide by 0";
+            currentOperand = '';
+            return;
+          }
           computation = prev / current;
+          equation = `${prev} ÷ ${current}`;
+          break;
+        case '^':
+          computation = Math.pow(prev, current);
+          equation = `${prev} ^ ${current}`;
           break;
         default:
           return;
       }
-
-      currentOperand = computation;
+      addToHistory(equation, computation);
+      currentOperand = computation.toString();
       operation = undefined;
       previousOperand = '';
       updateDisplay();
+    }
+
+    function addToHistory(equation, result) {
+      history.unshift({ equation, result });
+      if (history.length > 15) history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = '';
+      if (history.length === 0) {
+        historyList.innerHTML = '<li style="color:#aaa">No history yet.</li>';
+        return;
+      }
+      history.forEach((item, idx) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.equation} = ${item.result}`;
+        li.title = "Click to use result";
+        li.onclick = () => {
+          currentOperand = item.result.toString();
+          previousOperand = '';
+          operation = undefined;
+          updateDisplay();
+        };
+        historyList.appendChild(li);
+      });
     }
 
     function clearDisplay() {
@@ -211,9 +366,48 @@ button.clear:hover {
     }
 
     function updateDisplay() {
-      const display = document.getElementById('display');
       display.value = currentOperand;
     }
+
+    function backspace() {
+      currentOperand = currentOperand.slice(0, -1);
+      updateDisplay();
+    }
+
+    function copyResult() {
+      if (currentOperand === '') return;
+      navigator.clipboard.writeText(currentOperand);
+      let oldText = display.value;
+      display.value = "Copied!";
+      setTimeout(() => { display.value = oldText; }, 600);
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) return;
+      if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+      else if (e.key === '.') appendNumber('.');
+      else if (e.key === '+') chooseOperator('+');
+      else if (e.key === '-') chooseOperator('-');
+      else if (e.key === '*') chooseOperator('*');
+      else if (e.key === '/' || e.key === '÷') chooseOperator('/');
+      else if (e.key === '^') scientific('^');
+      else if (e.key === 'Enter' || e.key === '=') calculate();
+      else if (e.key === 'Backspace') backspace();
+      else if (e.key === 'Delete') clearDisplay();
+      else if (e.key === '%') scientific('%');
+      else if (e.key === 'r') scientific('sqrt');
+    });
+
+    // Theme toggle
+    themeToggle.onclick = () => {
+      body.classList.toggle('dark');
+      themeToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+    };
+
+    // Initial
+    renderHistory();
+    updateDisplay();
   </script>
 </body>
 </html>
